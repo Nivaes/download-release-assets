@@ -510,6 +510,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.downloadFile = void 0;
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const thc = __importStar(__webpack_require__(874));
@@ -522,9 +523,10 @@ async function downloadFile(url, fileName, outputPath, content_type, token) {
     const headers = {
         Accept: content_type
     };
-    if (token !== "") {
-        headers["Authorization"] = `token ${token}`;
-    }
+    core.info(`kk ${token}`);
+    //if (token !== "") {
+    headers["Authorization"] = `token ${token}`;
+    //}
     core.info(`Descargando: ${url}`);
     const response = await httpClient.get(url, headers);
     if (response.message.statusCode !== 200) {
@@ -538,6 +540,7 @@ async function downloadFile(url, fileName, outputPath, content_type, token) {
         outStream.on("close", () => resolve(outFilePath));
     });
 }
+exports.downloadFile = downloadFile;
 async function run() {
     try {
         if (github.context.eventName !== "release") {
@@ -548,7 +551,9 @@ async function run() {
         if (string_1.default.isNullOrEmpty(token)) {
             throw new Error("Not token definition");
         }
-        const outputPath = "./";
+        let outputPath = core.getInput("outputPath", { required: false });
+        if (string_1.default.isNullOrEmpty(outputPath))
+            outputPath = "./";
         const releasePayload = github.context.payload;
         for (const element of releasePayload.release.assets) {
             core.info(`browser_download_url: ${element.browser_download_url}`);

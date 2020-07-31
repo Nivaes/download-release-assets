@@ -11,11 +11,18 @@ import String from "./string";
 const httpClient: thc.HttpClient = new thc.HttpClient("gh-api-client");
 
 //async function downloadFile(octokit: Octokit, uploadUrl: string, assetPath: string): Promise<void> {
-async function downloadFile(url: string, fileName: string, outputPath: string, content_type: string, token: string): Promise<string> {
+export async function downloadFile(
+  url: string,
+  fileName: string,
+  outputPath: string,
+  content_type: string,
+  token: string
+): Promise<string> {
   const headers: IHeaders = {
     Accept: content_type
   };
 
+  core.info(`kk ${token}`);
   //if (token !== "") {
   headers["Authorization"] = `token ${token}`;
   //}
@@ -50,7 +57,8 @@ async function run(): Promise<void> {
       throw new Error("Not token definition");
     }
 
-    const outputPath = "./";
+    let outputPath = core.getInput("outputPath", {required: false});
+    if (String.isNullOrEmpty(outputPath)) outputPath = "./";
 
     const releasePayload = github.context.payload as Webhooks.Webhooks.WebhookPayloadRelease;
 

@@ -1,6 +1,10 @@
 name: 'Download release assets'
 description: 'Download all asserts of Release.'
 author: 'Nivaes'
+inputs:
+  outputPath:
+    description: 'Path to output file.'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
