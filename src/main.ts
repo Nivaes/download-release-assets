@@ -16,9 +16,9 @@ async function downloadFile(url: string, fileName: string, outputPath: string, c
     Accept: content_type
   };
 
-  if (token !== "") {
-    headers["Authorization"] = `token ${token}`;
-  }
+  //if (token !== "") {
+  headers["Authorization"] = `token ${token}`;
+  //}
 
   core.info(`Descargando: ${url}`);
 
