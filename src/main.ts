@@ -24,9 +24,9 @@ async function run(): Promise<void> {
     const releasePayload = github.context.payload as Webhooks.Webhooks.WebhookPayloadRelease;
 
     for (const element of releasePayload.release.assets) {
-      core.debug(`browser_download_url: ${element.browser_download_url}`);
-      core.debug(`name: ${element.name}`);
-      core.debug(`content_type: ${element.content_type}`);
+      core.info(`browser_download_url: ${element.browser_download_url}`);
+      core.info(`name: ${element.name}`);
+      core.info(`content_type: ${element.content_type}`);
     }
 
     //const github = new GitHub(process.env.GITHUB_TOKEN);
