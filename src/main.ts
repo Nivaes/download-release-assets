@@ -20,10 +20,12 @@ async function downloadFile(url: string, fileName: string, outputPath: string, c
     headers["Authorization"] = `token ${token}`;
   }
 
+  core.info(`Descargando: ${url}`);
+
   const response = await httpClient.get(url, headers);
 
   if (response.message.statusCode !== 200) {
-    throw new Error(`Unexpected response: ${response.message.statusCode}`);
+    throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
   }
   const outFilePath: string = path.resolve(outputPath, fileName);
   const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
