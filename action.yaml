@@ -1,5 +1,5 @@
 name: 'Download release assets'
-description: 'Download al asserts of Release.'
+description: 'Download all asserts of Release.'
 author: 'Nivaes'
 runs:
   using: 'node12'

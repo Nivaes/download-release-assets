@@ -2,13 +2,13 @@
 
 Download all asset of a release.
 
-Example usage
+## Example usage
 
 ````YML
 on:
   release:
 steps:
-    - name: Download Release Asset
+    - name: Download Release Assets
       uses: nivaes/download-release-assets@master
 
 ````
