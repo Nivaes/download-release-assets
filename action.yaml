@@ -1,0 +1,9 @@
+name: 'Download release assets'
+description: 'Download al asserts of Release.'
+author: 'Nivaes'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'tag'
+  color: 'gray-dark'

@@ -1,0 +1,51 @@
+{
+  "name": "get-version",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "lint": "eslint src/**/*.ts",
+    "package": "ncc build --source-map",
+    "test": "jest",
+    "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nivaes/get-version.git"
+  },
+  "keywords": [
+    "actions",
+    "node",
+    "setup",
+    "version"
+  ],
+  "author": "Nivaes Systems",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nivaes/get-version/issues"
+  },
+  "homepage": "https://github.com/nivaes/get-version#readme",
+  "dependencies": {
+    "@actions/core": "1.2.4",
+    "@actions/github": "4.0.0",
+    "@octokit/webhooks": "^7.7.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.7",
+    "@types/node": "^14.0.27",
+    "@typescript-eslint/parser": "^3.7.1",
+    "@zeit/ncc": "^0.22.3",
+    "eslint": "^7.5.0",
+    "eslint-plugin-github": "^4.1.1",
+    "eslint-plugin-jest": "^23.20.0",
+    "jest": "^26.2.1",
+    "jest-circus": "^26.2.1",
+    "js-yaml": "^3.14.0",
+    "prettier": "2.0.5",
+    "ts-jest": "^26.1.4",
+    "typescript": "^3.9.7"
+  }
+}
