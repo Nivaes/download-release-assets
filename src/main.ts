@@ -8,7 +8,7 @@ import {IHeaders} from "typed-rest-client/Interfaces";
 
 import String from "./string";
 
-const httpClient: thc.HttpClient = new thc.HttpClient("gh-api-client");
+const httpClient: thc.HttpClient = new thc.HttpClient(null);
 
 //async function downloadFile(octokit: Octokit, uploadUrl: string, assetPath: string): Promise<void> {
 export async function downloadFile(
@@ -22,7 +22,6 @@ export async function downloadFile(
     Accept: content_type
   };
 
-  core.info(`kk ${token}`);
   //if (token !== "") {
   headers["Authorization"] = `token ${token}`;
   //}
