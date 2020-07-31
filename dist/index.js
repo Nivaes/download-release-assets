@@ -547,7 +547,7 @@ async function run() {
         if (string_1.default.isNullOrEmpty(token)) {
             throw new Error("Not token definition");
         }
-        const outputPath = "";
+        const outputPath = "./";
         const releasePayload = github.context.payload;
         for (const element of releasePayload.release.assets) {
             core.info(`browser_download_url: ${element.browser_download_url}`);

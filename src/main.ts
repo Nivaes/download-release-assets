@@ -48,7 +48,7 @@ async function run(): Promise<void> {
       throw new Error("Not token definition");
     }
 
-    const outputPath = "";
+    const outputPath = "./";
 
     const releasePayload = github.context.payload as Webhooks.Webhooks.WebhookPayloadRelease;
 
