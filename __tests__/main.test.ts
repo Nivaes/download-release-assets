@@ -37,8 +37,8 @@ test("String isNullOrEmpty", () => {
 
 test("Download file", () => {
   main.downloadFile(
-    "https://github.com/andres-gimenez/Nivaes.DataTestGenerator/releases/download/release/v2.6.53/Nivaes.DataTestGenerator.2.6.53.nupkg",
-    "Nivaes.DataTestGenerator.2.6.53.nupkg",
+    "https://github.githubassets.com/images/spinners/octocat-spinner-128.gif",
+    "octocat-spinner-128.gif",
     "./",
     "application/octet-stream",
     ""
