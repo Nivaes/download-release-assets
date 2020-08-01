@@ -559,10 +559,11 @@ async function run() {
         // if (String.isNullOrEmpty(token)) {
         //   throw new Error("Not token definition");
         // }
-        let outputPath = core.getInput("outputPath", { required: false });
+        const outputPath = core.getInput("outputPath", { required: false });
         core.info(`outputPath: ${outputPath}`);
+        //if (String.isNullOrEmpty(outputPath)) outputPath = "./";
         if (string_1.default.isNullOrEmpty(outputPath))
-            outputPath = "./";
+            core.info("outputPath: Default ");
         const token2 = core.getInput("token", { required: false });
         core.info(`token2: ${token2}`);
         const releasePayload = github.context.payload;

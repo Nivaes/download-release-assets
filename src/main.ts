@@ -66,9 +66,10 @@ async function run(): Promise<void> {
     //   throw new Error("Not token definition");
     // }
 
-    let outputPath = core.getInput("outputPath", {required: false});
+    const outputPath = core.getInput("outputPath", {required: false});
     core.info(`outputPath: ${outputPath}`);
-    if (String.isNullOrEmpty(outputPath)) outputPath = "./";
+    //if (String.isNullOrEmpty(outputPath)) outputPath = "./";
+    if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
     const token2 = core.getInput("token", {required: false});
     core.info(`token2: ${token2}`);
