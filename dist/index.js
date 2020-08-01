@@ -521,12 +521,9 @@ async function downloadFile(url, fileName, outputPath, content_type, token) {
     const headers = {
         Accept: content_type
     };
-    if (token === "") {
-        throw new Error("No token definition");
-    }
     if (token !== "") {
-        //headers["Authorization"] = `token ${token}`;
-        headers["authorization"] = `Bearer ${token}`;
+        headers["Authorization"] = `token ${token}`;
+        //headers["Authorization"] = `Bearer ${token}`;
     }
     const client = new thc.HttpClient("download-release-assets");
     const response = await client.get(url);
@@ -558,18 +555,22 @@ async function run() {
             return;
         }
         const token = process.env.GITHUB_TOKEN;
-        if (string_1.default.isNullOrEmpty(token)) {
-            throw new Error("Not token definition");
-        }
+        core.debug(`token: ${token}`);
+        // if (String.isNullOrEmpty(token)) {
+        //   throw new Error("Not token definition");
+        // }
         let outputPath = core.getInput("outputPath", { required: false });
+        core.debug(`outputPath: ${outputPath}`);
         if (string_1.default.isNullOrEmpty(outputPath))
             outputPath = "./";
+        const token2 = core.getInput("token", { required: false });
+        core.debug(`token2: ${token2}`);
         const releasePayload = github.context.payload;
         for (const element of releasePayload.release.assets) {
             core.debug(`browser_download_url: ${element.browser_download_url}`);
             core.debug(`name: ${element.name}`);
             core.debug(`content_type: ${element.content_type}`);
-            await downloadFile(element.browser_download_url, element.name, outputPath, element.content_type, token);
+            await downloadFile(element.browser_download_url, element.name, outputPath, element.content_type, token2);
             core.info(`Downloading file: ${element.name} to: ${outputPath}${element.name}`);
         }
     }

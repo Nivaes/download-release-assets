@@ -4,6 +4,11 @@ author: 'Nivaes'
 inputs:
   outputPath:
     description: 'Path to output file.'
+    default: "./"
+    required: false
+  token:
+    description: "Github token to access private repos"
+    default: ""
     required: false
 runs:
   using: 'node12'
