@@ -61,17 +61,17 @@ async function run(): Promise<void> {
     }
 
     const token: string = process.env.GITHUB_TOKEN as string;
-    core.debug(`token: ${token}`);
+    core.info(`token: ${token}`);
     // if (String.isNullOrEmpty(token)) {
     //   throw new Error("Not token definition");
     // }
 
     let outputPath = core.getInput("outputPath", {required: false});
-    core.debug(`outputPath: ${outputPath}`);
+    core.info(`outputPath: ${outputPath}`);
     if (String.isNullOrEmpty(outputPath)) outputPath = "./";
 
     const token2 = core.getInput("token", {required: false});
-    core.debug(`token2: ${token2}`);
+    core.info(`token2: ${token2}`);
 
     const releasePayload = github.context.payload as Webhooks.Webhooks.WebhookPayloadRelease;
 

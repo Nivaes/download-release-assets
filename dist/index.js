@@ -555,16 +555,16 @@ async function run() {
             return;
         }
         const token = process.env.GITHUB_TOKEN;
-        core.debug(`token: ${token}`);
+        core.info(`token: ${token}`);
         // if (String.isNullOrEmpty(token)) {
         //   throw new Error("Not token definition");
         // }
         let outputPath = core.getInput("outputPath", { required: false });
-        core.debug(`outputPath: ${outputPath}`);
+        core.info(`outputPath: ${outputPath}`);
         if (string_1.default.isNullOrEmpty(outputPath))
             outputPath = "./";
         const token2 = core.getInput("token", { required: false });
-        core.debug(`token2: ${token2}`);
+        core.info(`token2: ${token2}`);
         const releasePayload = github.context.payload;
         for (const element of releasePayload.release.assets) {
             core.debug(`browser_download_url: ${element.browser_download_url}`);
