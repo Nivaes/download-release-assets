@@ -521,8 +521,12 @@ async function downloadFile(url, fileName, outputPath, content_type, token) {
     const headers = {
         Accept: content_type
     };
+    if (token === "") {
+        throw new Error("No token definition");
+    }
     if (token !== "") {
-        headers["Authorization"] = `token ${token}`;
+        //headers["Authorization"] = `token ${token}`;
+        headers["authorization"] = `Bearer ${token}`;
     }
     const client = new thc.HttpClient("download-release-assets");
     const response = await client.get(url);
