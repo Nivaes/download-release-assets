@@ -2,15 +2,11 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import * as Webhooks from "@octokit/webhooks";
 import * as thc from "typed-rest-client/HttpClient";
-import * as fs from "fs";
+import fs from "fs";
 import * as path from "path";
 import {IHeaders} from "typed-rest-client/Interfaces";
-
 import String from "./string";
 
-const httpClient: thc.HttpClient = new thc.HttpClient(null);
-
-//async function downloadFile(octokit: Octokit, uploadUrl: string, assetPath: string): Promise<void> {
 export async function downloadFile(
   url: string,
   fileName: string,
@@ -22,25 +18,36 @@ export async function downloadFile(
     Accept: content_type
   };
 
-  //if (token !== "") {
-  headers["Authorization"] = `token ${token}`;
-  //}
+  if (token !== "") {
+    headers["Authorization"] = `token ${token}`;
+  }
 
-  core.info(`Descargando: ${url}`);
+  const client = new thc.HttpClient("download-release-assets");
+  const response = await client.get(url);
 
-  const response = await httpClient.get(url, headers);
+  const outFilePath: string = path.resolve(outputPath, fileName);
+  const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
 
   if (response.message.statusCode !== 200) {
     throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
   }
-  const outFilePath: string = path.resolve(outputPath, fileName);
-  const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
 
   return new Promise((resolve, reject) => {
-    fileStream.on("error", err => reject(err));
+    response.message.on("error", err => {
+      core.info(`Error to download ${url}`);
+      return reject(err);
+    });
+
+    fileStream.on("error", err => {
+      core.info(`Error to write ${outFilePath}`);
+      return reject(err);
+    });
+
     const outStream = response.message.pipe(fileStream);
 
-    outStream.on("close", () => resolve(outFilePath));
+    outStream.on("close", () => {
+      return resolve(outFilePath);
+    });
   });
 }
 

@@ -36,5 +36,11 @@ test("String isNullOrEmpty", () => {
 });
 
 test("Download file", () => {
-  //main.downloadFile()
+  main.downloadFile(
+    "https://github.com/andres-gimenez/Nivaes.DataTestGenerator/releases/download/release/v2.6.53/Nivaes.DataTestGenerator.2.6.53.nupkg",
+    "Nivaes.DataTestGenerator.2.6.53.nupkg",
+    "./",
+    "application/octet-stream",
+    ""
+  );
 });

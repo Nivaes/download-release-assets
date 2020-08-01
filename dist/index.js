@@ -514,30 +514,36 @@ exports.downloadFile = void 0;
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const thc = __importStar(__webpack_require__(874));
-const fs = __importStar(__webpack_require__(747));
+const fs_1 = __importDefault(__webpack_require__(747));
 const path = __importStar(__webpack_require__(622));
 const string_1 = __importDefault(__webpack_require__(591));
-const httpClient = new thc.HttpClient("gh-api-client");
-//async function downloadFile(octokit: Octokit, uploadUrl: string, assetPath: string): Promise<void> {
 async function downloadFile(url, fileName, outputPath, content_type, token) {
     const headers = {
         Accept: content_type
     };
-    core.info(`kk ${token}`);
-    //if (token !== "") {
-    headers["Authorization"] = `token ${token}`;
-    //}
-    core.info(`Descargando: ${url}`);
-    const response = await httpClient.get(url, headers);
+    if (token !== "") {
+        headers["Authorization"] = `token ${token}`;
+    }
+    const client = new thc.HttpClient("download-release-assets");
+    const response = await client.get(url);
+    const outFilePath = path.resolve(outputPath, fileName);
+    const fileStream = fs_1.default.createWriteStream(outFilePath);
     if (response.message.statusCode !== 200) {
         throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
     }
-    const outFilePath = path.resolve(outputPath, fileName);
-    const fileStream = fs.createWriteStream(outFilePath);
     return new Promise((resolve, reject) => {
-        fileStream.on("error", err => reject(err));
+        response.message.on("error", err => {
+            core.info(`Error to download ${url}`);
+            return reject(err);
+        });
+        fileStream.on("error", err => {
+            core.info(`Error to write ${outFilePath}`);
+            return reject(err);
+        });
         const outStream = response.message.pipe(fileStream);
-        outStream.on("close", () => resolve(outFilePath));
+        outStream.on("close", () => {
+            return resolve(outFilePath);
+        });
     });
 }
 exports.downloadFile = downloadFile;
