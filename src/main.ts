@@ -19,7 +19,7 @@ export async function downloadFile(
   };
 
   if (token !== "") {
-    headers["Authorization"] = `token ${token}`;
+    headers["Authorization"] = ` token ${token}`;
     //headers["Authorization"] = `Bearer ${token}`;
   }
 

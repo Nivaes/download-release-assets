@@ -522,7 +522,7 @@ async function downloadFile(url, fileName, outputPath, content_type, token) {
         Accept: content_type
     };
     if (token !== "") {
-        headers["Authorization"] = `token ${token}`;
+        headers["Authorization"] = ` token ${token}`;
         //headers["Authorization"] = `Bearer ${token}`;
     }
     const client = new thc.HttpClient("download-release-assets");
