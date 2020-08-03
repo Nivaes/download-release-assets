@@ -533,6 +533,10 @@ async function downloadFile(octokit, fileName, outputPath, content_type, assetPa
     // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
     const outFilePath = path.resolve(outputPath, fileName);
     const file = fs_1.default.createWriteStream(outFilePath);
+    core.debug(`fileName ${fileName}`);
+    core.debug(`outputPath ${outputPath}`);
+    core.debug(`outFilePath ${outFilePath}`);
+    core.debug(`assetPath ${assetPath}`);
     const buffer = octokit.repos.getReleaseAsset({
         headers: {
             Accept: content_type
@@ -597,15 +601,16 @@ async function run() {
             core.info("outputPath: Default ");
         // const token = core.getInput("token", {required: false});
         // core.debug(`token: ${token}`);
-        const downloads = [];
+        //const downloads: Promise<void>[] = [];
         //github.event.release.assets
         for (const asset of github.context.payload.release.assets) {
             core.debug(`browser_download_url: ${asset.browser_download_url}`);
             core.debug(`name: ${asset.name}`);
             core.debug(`content_type: ${asset.content_type}`);
-            downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
+            //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
+            await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
         }
-        await Promise.all(downloads);
+        //await Promise.all(downloads);
     }
     catch (error) {
         core.setFailed(error.message);
