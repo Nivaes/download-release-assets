@@ -47,9 +47,9 @@ export async function downloadFile(
 
   const buffer = await octokit.repos.getReleaseAsset({
     //url: uploadUrl,
-    headers: {
-      Accept: content_type
-    },
+    // headers: {
+    //   Accept: content_type
+    // },
     asset_id: assetId
     //name: fileName
     //access_token: token

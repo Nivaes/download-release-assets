@@ -542,9 +542,9 @@ async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type,
     core.debug(`outFilePath ${outFilePath}`);
     const buffer = await octokit.repos.getReleaseAsset({
         //url: uploadUrl,
-        headers: {
-            Accept: content_type
-        },
+        // headers: {
+        //   Accept: content_type
+        // },
         asset_id: assetId
         //name: fileName
         //access_token: token
