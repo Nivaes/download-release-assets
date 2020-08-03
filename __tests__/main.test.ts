@@ -35,12 +35,12 @@ test("String isNullOrEmpty", () => {
   expect(String.isNullOrEmpty(v1)).toBeTruthy();
 });
 
-test("Download file", async () => {
-  await main.downloadFile(
-    "https://github.githubassets.com/images/spinners/octocat-spinner-128.gif",
-    "octocat-spinner-128.gif",
-    "./",
-    "application/octet-stream",
-    ""
-  );
-});
+// test("Download file", async () => {
+//   await main.downloadFile(
+//     "https://github.githubassets.com/images/spinners/octocat-spinner-128.gif",
+//     "octocat-spinner-128.gif",
+//     "./",
+//     "application/octet-stream",
+//     ""
+//   );
+// });

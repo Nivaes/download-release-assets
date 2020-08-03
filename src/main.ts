@@ -1,58 +1,96 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import * as thc from "typed-rest-client/HttpClient";
+import {Octokit} from "@octokit/core";
+// import * as thc from "typed-rest-client/HttpClient";
 import fs from "fs";
 import * as path from "path";
-import {IHeaders} from "typed-rest-client/Interfaces";
+// import {IHeaders} from "typed-rest-client/Interfaces";
 import String from "./string";
+//import callbackGlob from "glob";
+//import * as mimeTypes from "mime-types";
 
 export async function downloadFile(
-  url: string,
+  octokit: Octokit,
   fileName: string,
   outputPath: string,
   content_type: string,
-  token: string
-): Promise<string> {
-  const headers: IHeaders = {
-    Accept: content_type,
-    Connection: "keep-alive"
-  };
+  assetPath: string
+): Promise<void> {
+  const assetName: string = path.basename(assetPath);
 
-  if (token !== "") {
-    headers["Authorization"] = ` token ${token}`;
-  }
+  // Determine content-length for header to upload asset
+  //const contentLength = (filePath: fs.PathLike) => fs.statSync(filePath).size;
 
-  const client = new thc.HttpClient("download-release-assets");
+  // Guess mime type using mime-types package - or fallback to application/octet-stream
+  //const assetContentType = mimeTypes.lookup(assetName) || "application/octet-stream";
 
-  const response = await client.get(url, headers);
+  //   // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset for more information
+  //const headers = {"content-type": assetContentType, "content-length": contentLength(assetPath)};
 
-  if (response.message.statusCode !== 200) {
-    throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
-  }
+  // Upload a release asset
+  // API Documentation: https://developer.github.com/v3/repos/releases/#upload-a-release-asset
+  // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
 
   const outFilePath: string = path.resolve(outputPath, fileName);
-  const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
+  const file = fs.createWriteStream(outFilePath);
 
-  return new Promise((resolve, reject) => {
-    response.message.on("error", err => {
-      core.info(`Error to download ${url}`);
-      return reject(err);
-    });
-
-    fileStream.on("error", err => {
-      core.info(`Error to write ${outFilePath}`);
-      return reject(err);
-    });
-
-    const outStream = response.message.pipe(fileStream);
-
-    core.info(`Downloading file: ${url} to: ${outputPath}`);
-
-    outStream.on("close", () => {
-      return resolve(outFilePath);
-    });
+  const buffer = octokit.repos.getReleaseAsset({
+    headers: {
+      Accept: content_type
+    },
+    name: assetName
   });
+  file.write(buffer);
+  file.end();
 }
+
+// export async function downloadFile(
+//   url: string,
+//   fileName: string,
+//   outputPath: string,
+//   content_type: string,
+//   token: string
+// ): Promise<string> {
+//   const headers: IHeaders = {
+//     Accept: content_type,
+//     Connection: "keep-alive"
+//   };
+
+//   if (token !== "") {
+//     headers["Authorization"] = ` token ${token}`;
+//   }
+
+//   const client = new thc.HttpClient("download-release-assets");
+
+//   const response = await client.get(url, headers);
+
+//   if (response.message.statusCode !== 200) {
+//     throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
+//   }
+
+//   const outFilePath: string = path.resolve(outputPath, fileName);
+//   const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
+
+//   return new Promise((resolve, reject) => {
+//     response.message.on("error", err => {
+//       core.info(`Error to download ${url}`);
+//       return reject(err);
+//     });
+
+//     fileStream.on("error", err => {
+//       core.info(`Error to write ${outFilePath}`);
+//       return reject(err);
+//     });
+
+//     const outStream = response.message.pipe(fileStream);
+
+//     core.info(`Downloading file: ${url} to: ${outputPath}`);
+
+//     outStream.on("close", () => {
+//       return resolve(outFilePath);
+//     });
+//   });
+// }
 
 async function run(): Promise<void> {
   try {
@@ -61,21 +99,28 @@ async function run(): Promise<void> {
       return;
     }
 
+    const token: string = process.env.GITHUB_TOKEN as string;
+    if (String.isNullOrEmpty(token)) {
+      throw new Error("Not token definition");
+    }
+    const octokit = github.getOctokit(token);
+
     const outputPath = core.getInput("outputPath", {required: false});
     core.debug(`outputPath: ${outputPath}`);
     if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
-    const token = core.getInput("token", {required: false});
-    core.debug(`token: ${token}`);
+    // const token = core.getInput("token", {required: false});
+    // core.debug(`token: ${token}`);
 
-    const downloads: Promise<string>[] = [];
+    const downloads: Promise<void>[] = [];
 
+    //github.event.release.assets
     for (const asset of github.context.payload.release.assets) {
       core.debug(`browser_download_url: ${asset.browser_download_url}`);
       core.debug(`name: ${asset.name}`);
       core.debug(`content_type: ${asset.content_type}`);
 
-      downloads.push(downloadFile(asset.url, asset.name, outputPath, asset.content_type, token));
+      downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
     }
     await Promise.all(downloads);
   } catch (error) {

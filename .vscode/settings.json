@@ -5,6 +5,7 @@
         "heads",
         "octokit",
         "payload",
-        "refs"
+        "refs",
+        "repos"
     ]
 }
