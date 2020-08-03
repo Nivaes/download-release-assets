@@ -520,7 +520,7 @@ const path = __importStar(__webpack_require__(622));
 const string_1 = __importDefault(__webpack_require__(591));
 //import callbackGlob from "glob";
 //import * as mimeTypes from "mime-types";
-async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type, outputPath) {
+async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type, outputPath, token) {
     //const assetName: string = path.basename(assetPath);
     // Determine content-length for header to upload asset
     //const contentLength = (filePath: fs.PathLike) => fs.statSync(filePath).size;
@@ -544,6 +544,9 @@ async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type,
         headers: {
             Accept: content_type
         },
+        //asset_id: assetId
+        //name: fileName
+        access_token: token
     });
     core.debug("1");
     file.write(buffer.data);
@@ -552,43 +555,6 @@ async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type,
     core.debug("3");
 }
 exports.downloadFile = downloadFile;
-// export async function downloadFile(
-//   url: string,
-//   fileName: string,
-//   outputPath: string,
-//   content_type: string,
-//   token: string
-// ): Promise<string> {
-//   const headers: IHeaders = {
-//     Accept: content_type,
-//     Connection: "keep-alive"
-//   };
-//   if (token !== "") {
-//     headers["Authorization"] = ` token ${token}`;
-//   }
-//   const client = new thc.HttpClient("download-release-assets");
-//   const response = await client.get(url, headers);
-//   if (response.message.statusCode !== 200) {
-//     throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
-//   }
-//   const outFilePath: string = path.resolve(outputPath, fileName);
-//   const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
-//   return new Promise((resolve, reject) => {
-//     response.message.on("error", err => {
-//       core.info(`Error to download ${url}`);
-//       return reject(err);
-//     });
-//     fileStream.on("error", err => {
-//       core.info(`Error to write ${outFilePath}`);
-//       return reject(err);
-//     });
-//     const outStream = response.message.pipe(fileStream);
-//     core.info(`Downloading file: ${url} to: ${outputPath}`);
-//     outStream.on("close", () => {
-//       return resolve(outFilePath);
-//     });
-//   });
-// }
 async function run() {
     try {
         if (github.context.eventName !== "release") {
@@ -607,7 +573,6 @@ async function run() {
         // const token = core.getInput("token", {required: false});
         // core.debug(`token: ${token}`);
         //const downloads: Promise<void>[] = [];
-        //github.event.release.assets
         for (const asset of github.context.payload.release.assets) {
             core.debug(`url: ${asset.url}`);
             core.debug(`browser_download_url: ${asset.browser_download_url}`);
@@ -617,7 +582,7 @@ async function run() {
             //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
             //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
             //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
-            await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath);
+            await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath, token);
         }
         //await Promise.all(downloads);
     }
