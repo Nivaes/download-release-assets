@@ -62,20 +62,20 @@ async function run(): Promise<void> {
     }
 
     const outputPath = core.getInput("outputPath", {required: false});
-    //core.info(`outputPath: ${outputPath}`);
+    core.debug(`outputPath: ${outputPath}`);
     if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
     const token = core.getInput("token", {required: false});
-    //core.info(`token: ${token}`);
+    core.debug(`token: ${token}`);
 
     const downloads: Promise<string>[] = [];
 
-    for (const element of github.context.payload.Release.assets) {
-      core.debug(`browser_download_url: ${element.browser_download_url}`);
-      core.debug(`name: ${element.name}`);
-      core.debug(`content_type: ${element.content_type}`);
+    for (const asset of github.context.payload.release.assets) {
+      core.debug(`browser_download_url: ${asset.browser_download_url}`);
+      core.debug(`name: ${asset.name}`);
+      core.debug(`content_type: ${asset.content_type}`);
 
-      downloads.push(downloadFile(element.url, element.name, outputPath, element.content_type, token));
+      downloads.push(downloadFile(asset.url, asset.name, outputPath, asset.content_type, token));
     }
     await Promise.all(downloads);
   } catch (error) {
