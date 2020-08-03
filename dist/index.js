@@ -520,8 +520,8 @@ const path = __importStar(__webpack_require__(622));
 const string_1 = __importDefault(__webpack_require__(591));
 //import callbackGlob from "glob";
 //import * as mimeTypes from "mime-types";
-async function downloadFile(octokit, fileName, outputPath, content_type, assetPath) {
-    const assetName = path.basename(assetPath);
+async function downloadFile(octokit, uploadUrl, fileName, content_type, outputPath) {
+    //const assetName: string = path.basename(assetPath);
     // Determine content-length for header to upload asset
     //const contentLength = (filePath: fs.PathLike) => fs.statSync(filePath).size;
     // Guess mime type using mime-types package - or fallback to application/octet-stream
@@ -533,15 +533,16 @@ async function downloadFile(octokit, fileName, outputPath, content_type, assetPa
     // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
     const outFilePath = path.resolve(outputPath, fileName);
     const file = fs_1.default.createWriteStream(outFilePath);
+    core.debug(`uploadUrl ${uploadUrl}`);
     core.debug(`fileName ${fileName}`);
+    core.debug(`content_type ${content_type}`);
     core.debug(`outputPath ${outputPath}`);
-    core.debug(`outFilePath ${outFilePath}`);
-    core.debug(`assetPath ${assetPath}`);
     const buffer = octokit.repos.getReleaseAsset({
+        url: uploadUrl,
         headers: {
             Accept: content_type
         },
-        name: assetName
+        name: fileName
     });
     file.write(buffer);
     file.end();
@@ -608,7 +609,8 @@ async function run() {
             core.debug(`name: ${asset.name}`);
             core.debug(`content_type: ${asset.content_type}`);
             //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
-            await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
+            //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
+            await downloadFile(octokit, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
         }
         //await Promise.all(downloads);
     }

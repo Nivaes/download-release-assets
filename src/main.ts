@@ -11,12 +11,12 @@ import String from "./string";
 
 export async function downloadFile(
   octokit: Octokit,
+  uploadUrl: string,
   fileName: string,
-  outputPath: string,
   content_type: string,
-  assetPath: string
+  outputPath: string
 ): Promise<void> {
-  const assetName: string = path.basename(assetPath);
+  //const assetName: string = path.basename(assetPath);
 
   // Determine content-length for header to upload asset
   //const contentLength = (filePath: fs.PathLike) => fs.statSync(filePath).size;
@@ -34,16 +34,17 @@ export async function downloadFile(
   const outFilePath: string = path.resolve(outputPath, fileName);
   const file = fs.createWriteStream(outFilePath);
 
+  core.debug(`uploadUrl ${uploadUrl}`);
   core.debug(`fileName ${fileName}`);
+  core.debug(`content_type ${content_type}`);
   core.debug(`outputPath ${outputPath}`);
-  core.debug(`outFilePath ${outFilePath}`);
-  core.debug(`assetPath ${assetPath}`);
 
   const buffer = octokit.repos.getReleaseAsset({
+    url: uploadUrl,
     headers: {
       Accept: content_type
     },
-    name: assetName
+    name: fileName
   });
   file.write(buffer);
   file.end();
@@ -126,7 +127,8 @@ async function run(): Promise<void> {
       core.debug(`content_type: ${asset.content_type}`);
 
       //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
-      await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
+      //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
+      await downloadFile(octokit, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
     }
     //await Promise.all(downloads);
   } catch (error) {
