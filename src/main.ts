@@ -117,7 +117,7 @@ async function run(): Promise<void> {
     // const token = core.getInput("token", {required: false});
     // core.debug(`token: ${token}`);
 
-    const downloads: Promise<void>[] = [];
+    //const downloads: Promise<void>[] = [];
 
     //github.event.release.assets
     for (const asset of github.context.payload.release.assets) {
@@ -125,9 +125,10 @@ async function run(): Promise<void> {
       core.debug(`name: ${asset.name}`);
       core.debug(`content_type: ${asset.content_type}`);
 
-      downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
+      //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
+      await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
     }
-    await Promise.all(downloads);
+    //await Promise.all(downloads);
   } catch (error) {
     core.setFailed(error.message);
   }
