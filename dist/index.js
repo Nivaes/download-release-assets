@@ -520,7 +520,7 @@ const path = __importStar(__webpack_require__(622));
 const string_1 = __importDefault(__webpack_require__(591));
 //import callbackGlob from "glob";
 //import * as mimeTypes from "mime-types";
-async function downloadFile(octokit, uploadUrl, fileName, content_type, outputPath) {
+async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type, outputPath) {
     //const assetName: string = path.basename(assetPath);
     // Determine content-length for header to upload asset
     //const contentLength = (filePath: fs.PathLike) => fs.statSync(filePath).size;
@@ -539,14 +539,18 @@ async function downloadFile(octokit, uploadUrl, fileName, content_type, outputPa
     const file = fs_1.default.createWriteStream(outFilePath);
     core.debug(`outFilePath ${outFilePath}`);
     const buffer = await octokit.repos.getReleaseAsset({
-        url: uploadUrl,
-        headers: {
-            Accept: content_type
-        },
-        name: fileName
+        //url: uploadUrl,
+        // headers: {
+        //   Accept: content_type
+        // },
+        asset_id: assetId
+        //name: fileName
     });
+    core.debug("1");
     file.write(buffer);
+    core.debug("2");
     file.end();
+    core.debug("3");
 }
 exports.downloadFile = downloadFile;
 // export async function downloadFile(
@@ -611,7 +615,7 @@ async function run() {
             core.debug(`content_type: ${asset.content_type}`);
             //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
             //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
-            await downloadFile(octokit, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
+            await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
         }
         //await Promise.all(downloads);
     }

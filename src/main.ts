@@ -11,6 +11,7 @@ import String from "./string";
 
 export async function downloadFile(
   octokit: Octokit,
+  assetId: string,
   uploadUrl: string,
   fileName: string,
   content_type: string,
@@ -42,14 +43,18 @@ export async function downloadFile(
   core.debug(`outFilePath ${outFilePath}`);
 
   const buffer = await octokit.repos.getReleaseAsset({
-    url: uploadUrl,
-    headers: {
-      Accept: content_type
-    },
-    name: fileName
+    //url: uploadUrl,
+    // headers: {
+    //   Accept: content_type
+    // },
+    asset_id: assetId
+    //name: fileName
   });
+  core.debug("1");
   file.write(buffer);
+  core.debug("2");
   file.end();
+  core.debug("3");
 }
 
 // export async function downloadFile(
@@ -130,7 +135,7 @@ async function run(): Promise<void> {
 
       //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
       //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
-      await downloadFile(octokit, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
+      await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
     }
     //await Promise.all(downloads);
   } catch (error) {
