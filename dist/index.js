@@ -556,11 +556,11 @@ async function run() {
             return;
         }
         const outputPath = core.getInput("outputPath", { required: false });
-        core.info(`outputPath: ${outputPath}`);
+        //core.info(`outputPath: ${outputPath}`);
         if (string_1.default.isNullOrEmpty(outputPath))
             core.info("outputPath: Default ");
         const token = core.getInput("token", { required: false });
-        core.info(`token2: ${token}`);
+        //core.info(`token: ${token}`);
         const downloads = [];
         for (const element of github.context.payload.Release.assets) {
             core.debug(`browser_download_url: ${element.browser_download_url}`);

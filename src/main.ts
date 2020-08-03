@@ -62,12 +62,11 @@ async function run(): Promise<void> {
     }
 
     const outputPath = core.getInput("outputPath", {required: false});
-    core.info(`outputPath: ${outputPath}`);
-
+    //core.info(`outputPath: ${outputPath}`);
     if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
     const token = core.getInput("token", {required: false});
-    core.info(`token2: ${token}`);
+    //core.info(`token: ${token}`);
 
     const downloads: Promise<string>[] = [];
 
