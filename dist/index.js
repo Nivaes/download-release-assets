@@ -617,7 +617,7 @@ async function run() {
             //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
             //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
             //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
-            await downloadFile(octokit, asset.uploader.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
+            await downloadFile(octokit, asset.node_id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
         }
         //await Promise.all(downloads);
     }
