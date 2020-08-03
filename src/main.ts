@@ -15,7 +15,8 @@ export async function downloadFile(
   uploadUrl: string,
   fileName: string,
   content_type: string,
-  outputPath: string
+  outputPath: string,
+  token: string
 ): Promise<void> {
   //const assetName: string = path.basename(assetPath);
 
@@ -47,9 +48,10 @@ export async function downloadFile(
     url: uploadUrl,
     headers: {
       Accept: content_type
-    }
+    },
     //asset_id: assetId
     //name: fileName
+    access_token: token
   });
   core.debug("1");
   file.write(buffer.data);
@@ -57,54 +59,6 @@ export async function downloadFile(
   file.end();
   core.debug("3");
 }
-
-// export async function downloadFile(
-//   url: string,
-//   fileName: string,
-//   outputPath: string,
-//   content_type: string,
-//   token: string
-// ): Promise<string> {
-//   const headers: IHeaders = {
-//     Accept: content_type,
-//     Connection: "keep-alive"
-//   };
-
-//   if (token !== "") {
-//     headers["Authorization"] = ` token ${token}`;
-//   }
-
-//   const client = new thc.HttpClient("download-release-assets");
-
-//   const response = await client.get(url, headers);
-
-//   if (response.message.statusCode !== 200) {
-//     throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
-//   }
-
-//   const outFilePath: string = path.resolve(outputPath, fileName);
-//   const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
-
-//   return new Promise((resolve, reject) => {
-//     response.message.on("error", err => {
-//       core.info(`Error to download ${url}`);
-//       return reject(err);
-//     });
-
-//     fileStream.on("error", err => {
-//       core.info(`Error to write ${outFilePath}`);
-//       return reject(err);
-//     });
-
-//     const outStream = response.message.pipe(fileStream);
-
-//     core.info(`Downloading file: ${url} to: ${outputPath}`);
-
-//     outStream.on("close", () => {
-//       return resolve(outFilePath);
-//     });
-//   });
-// }
 
 async function run(): Promise<void> {
   try {
@@ -128,7 +82,6 @@ async function run(): Promise<void> {
 
     //const downloads: Promise<void>[] = [];
 
-    //github.event.release.assets
     for (const asset of github.context.payload.release.assets) {
       core.debug(`url: ${asset.url}`);
       core.debug(`browser_download_url: ${asset.browser_download_url}`);
@@ -139,7 +92,7 @@ async function run(): Promise<void> {
       //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
       //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
       //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
-      await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath);
+      await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath, token);
     }
     //await Promise.all(downloads);
   } catch (error) {
