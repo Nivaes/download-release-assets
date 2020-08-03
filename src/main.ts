@@ -31,15 +31,17 @@ export async function downloadFile(
   // API Documentation: https://developer.github.com/v3/repos/releases/#upload-a-release-asset
   // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
 
-  const outFilePath: string = path.resolve(outputPath, fileName);
-  const file = fs.createWriteStream(outFilePath);
-
   core.debug(`uploadUrl ${uploadUrl}`);
   core.debug(`fileName ${fileName}`);
   core.debug(`content_type ${content_type}`);
   core.debug(`outputPath ${outputPath}`);
 
-  const buffer = octokit.repos.getReleaseAsset({
+  const outFilePath: string = path.resolve(outputPath, fileName);
+  const file = fs.createWriteStream(outFilePath);
+
+  core.debug(`outFilePath ${outFilePath}`);
+
+  const buffer = await octokit.repos.getReleaseAsset({
     url: uploadUrl,
     headers: {
       Accept: content_type
