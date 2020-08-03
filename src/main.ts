@@ -1,6 +1,5 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import * as Webhooks from "@octokit/webhooks";
 import * as thc from "typed-rest-client/HttpClient";
 import fs from "fs";
 import * as path from "path";
@@ -15,24 +14,24 @@ export async function downloadFile(
   token: string
 ): Promise<string> {
   const headers: IHeaders = {
-    Accept: content_type
+    Accept: content_type,
+    Connection: "keep-alive"
   };
 
   if (token !== "") {
     headers["Authorization"] = ` token ${token}`;
-    //headers["Authorization"] = `Bearer ${token}`;
   }
 
   const client = new thc.HttpClient("download-release-assets");
 
-  const response = await client.get(url);
-
-  const outFilePath: string = path.resolve(outputPath, fileName);
-  const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
+  const response = await client.get(url, headers);
 
   if (response.message.statusCode !== 200) {
     throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
   }
+
+  const outFilePath: string = path.resolve(outputPath, fileName);
+  const fileStream: NodeJS.WritableStream = fs.createWriteStream(outFilePath);
 
   return new Promise((resolve, reject) => {
     response.message.on("error", err => {
@@ -47,6 +46,8 @@ export async function downloadFile(
 
     const outStream = response.message.pipe(fileStream);
 
+    core.info(`Downloading file: ${url} to: ${outputPath}`);
+
     outStream.on("close", () => {
       return resolve(outFilePath);
     });
@@ -60,30 +61,24 @@ async function run(): Promise<void> {
       return;
     }
 
-    const token: string = process.env.GITHUB_TOKEN as string;
-    core.info(`token: ${token}`);
-    // if (String.isNullOrEmpty(token)) {
-    //   throw new Error("Not token definition");
-    // }
-
     const outputPath = core.getInput("outputPath", {required: false});
     core.info(`outputPath: ${outputPath}`);
-    //if (String.isNullOrEmpty(outputPath)) outputPath = "./";
+
     if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
-    const token2 = core.getInput("token", {required: false});
-    core.info(`token2: ${token2}`);
+    const token = core.getInput("token", {required: false});
+    core.info(`token2: ${token}`);
 
-    const releasePayload = github.context.payload as Webhooks.Webhooks.WebhookPayloadRelease;
+    const downloads: Promise<string>[] = [];
 
-    for (const element of releasePayload.release.assets) {
+    for (const element of github.context.payload.Release.assets) {
       core.debug(`browser_download_url: ${element.browser_download_url}`);
       core.debug(`name: ${element.name}`);
       core.debug(`content_type: ${element.content_type}`);
 
-      await downloadFile(element.browser_download_url, element.name, outputPath, element.content_type, token2);
-      core.info(`Downloading file: ${element.name} to: ${outputPath}${element.name}`);
+      downloads.push(downloadFile(element.url, element.name, outputPath, element.content_type, token));
     }
+    await Promise.all(downloads);
   } catch (error) {
     core.setFailed(error.message);
   }

@@ -519,19 +519,19 @@ const path = __importStar(__webpack_require__(622));
 const string_1 = __importDefault(__webpack_require__(591));
 async function downloadFile(url, fileName, outputPath, content_type, token) {
     const headers = {
-        Accept: content_type
+        Accept: content_type,
+        Connection: "keep-alive"
     };
     if (token !== "") {
         headers["Authorization"] = ` token ${token}`;
-        //headers["Authorization"] = `Bearer ${token}`;
     }
     const client = new thc.HttpClient("download-release-assets");
-    const response = await client.get(url);
-    const outFilePath = path.resolve(outputPath, fileName);
-    const fileStream = fs_1.default.createWriteStream(outFilePath);
+    const response = await client.get(url, headers);
     if (response.message.statusCode !== 200) {
         throw new Error(`Unexpected response: ${response.message.statusCode} - ${response.message.statusMessage}`);
     }
+    const outFilePath = path.resolve(outputPath, fileName);
+    const fileStream = fs_1.default.createWriteStream(outFilePath);
     return new Promise((resolve, reject) => {
         response.message.on("error", err => {
             core.info(`Error to download ${url}`);
@@ -542,6 +542,7 @@ async function downloadFile(url, fileName, outputPath, content_type, token) {
             return reject(err);
         });
         const outStream = response.message.pipe(fileStream);
+        core.info(`Downloading file: ${url} to: ${outputPath}`);
         outStream.on("close", () => {
             return resolve(outFilePath);
         });
@@ -554,26 +555,20 @@ async function run() {
             core.info("Not assets download. This actions is only for release event.");
             return;
         }
-        const token = process.env.GITHUB_TOKEN;
-        core.info(`token: ${token}`);
-        // if (String.isNullOrEmpty(token)) {
-        //   throw new Error("Not token definition");
-        // }
         const outputPath = core.getInput("outputPath", { required: false });
         core.info(`outputPath: ${outputPath}`);
-        //if (String.isNullOrEmpty(outputPath)) outputPath = "./";
         if (string_1.default.isNullOrEmpty(outputPath))
             core.info("outputPath: Default ");
-        const token2 = core.getInput("token", { required: false });
-        core.info(`token2: ${token2}`);
-        const releasePayload = github.context.payload;
-        for (const element of releasePayload.release.assets) {
+        const token = core.getInput("token", { required: false });
+        core.info(`token2: ${token}`);
+        const downloads = [];
+        for (const element of github.context.payload.Release.assets) {
             core.debug(`browser_download_url: ${element.browser_download_url}`);
             core.debug(`name: ${element.name}`);
             core.debug(`content_type: ${element.content_type}`);
-            await downloadFile(element.browser_download_url, element.name, outputPath, element.content_type, token2);
-            core.info(`Downloading file: ${element.name} to: ${outputPath}${element.name}`);
+            downloads.push(downloadFile(element.url, element.name, outputPath, element.content_type, token));
         }
+        await Promise.all(downloads);
     }
     catch (error) {
         core.setFailed(error.message);
