@@ -531,6 +531,7 @@ async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type,
     // Upload a release asset
     // API Documentation: https://developer.github.com/v3/repos/releases/#upload-a-release-asset
     // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
+    core.debug(`assetId ${assetId}`);
     core.debug(`uploadUrl ${uploadUrl}`);
     core.debug(`fileName ${fileName}`);
     core.debug(`content_type ${content_type}`);
@@ -615,7 +616,8 @@ async function run() {
             core.debug(`content_type: ${asset.content_type}`);
             //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
             //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
-            await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
+            //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
+            await downloadFile(octokit, asset.uploader.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
         }
         //await Promise.all(downloads);
     }
