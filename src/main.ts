@@ -34,6 +34,11 @@ export async function downloadFile(
   const outFilePath: string = path.resolve(outputPath, fileName);
   const file = fs.createWriteStream(outFilePath);
 
+  core.debug(`fileName ${fileName}`);
+  core.debug(`outputPath ${outputPath}`);
+  core.debug(`outFilePath ${outFilePath}`);
+  core.debug(`assetPath ${assetPath}`);
+
   const buffer = octokit.repos.getReleaseAsset({
     headers: {
       Accept: content_type
