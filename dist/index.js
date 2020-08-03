@@ -541,11 +541,11 @@ async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type,
     const file = fs_1.default.createWriteStream(outFilePath);
     core.debug(`outFilePath ${outFilePath}`);
     const buffer = await octokit.repos.getReleaseAsset({
-        //url: uploadUrl,
-        // headers: {
-        //   Accept: content_type
-        // },
-        asset_id: assetId
+        url: uploadUrl,
+        headers: {
+            Accept: content_type
+        }
+        //asset_id: assetId
         //name: fileName
         //access_token: token
     });
