@@ -77,7 +77,7 @@ async function run(): Promise<void> {
     core.debug(`outputPath: ${outputPath}`);
     if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
-    // const token = core.getInput("token", {required: false});
+    const accessToken = core.getInput("token", {required: false});
     // core.debug(`token: ${token}`);
 
     //const downloads: Promise<void>[] = [];
@@ -92,7 +92,7 @@ async function run(): Promise<void> {
       //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
       //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
       //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
-      await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath, token);
+      await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath, accessToken);
     }
     //await Promise.all(downloads);
   } catch (error) {
