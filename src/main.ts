@@ -38,6 +38,7 @@ export async function downloadFile(
   core.debug(`fileName ${fileName}`);
   core.debug(`content_type ${content_type}`);
   core.debug(`outputPath ${outputPath}`);
+  core.debug(`token ${token}`);
 
   const outFilePath: string = path.resolve(outputPath, fileName);
   const file = fs.createWriteStream(outFilePath);
@@ -45,13 +46,13 @@ export async function downloadFile(
   core.debug(`outFilePath ${outFilePath}`);
 
   const buffer = await octokit.repos.getReleaseAsset({
-    url: uploadUrl,
+    //url: uploadUrl,
     headers: {
       Accept: content_type
     },
-    //asset_id: assetId
+    asset_id: assetId
     //name: fileName
-    access_token: token
+    //access_token: token
   });
   core.debug("1");
   file.write(buffer.data);
