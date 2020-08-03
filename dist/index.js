@@ -540,15 +540,13 @@ async function downloadFile(octokit, assetId, uploadUrl, fileName, content_type,
     const file = fs_1.default.createWriteStream(outFilePath);
     core.debug(`outFilePath ${outFilePath}`);
     const buffer = await octokit.repos.getReleaseAsset({
-        url: uploadUrl
-        // headers: {
-        //   Accept: content_type
-        // },
-        //asset_id: assetId
-        //name: fileName
+        url: uploadUrl,
+        headers: {
+            Accept: content_type
+        },
     });
     core.debug("1");
-    file.write(buffer);
+    file.write(buffer.data);
     core.debug("2");
     file.end();
     core.debug("3");
@@ -611,6 +609,7 @@ async function run() {
         //const downloads: Promise<void>[] = [];
         //github.event.release.assets
         for (const asset of github.context.payload.release.assets) {
+            core.debug(`url: ${asset.url}`);
             core.debug(`browser_download_url: ${asset.browser_download_url}`);
             core.debug(`name: ${asset.name}`);
             core.debug(`content_type: ${asset.content_type}`);

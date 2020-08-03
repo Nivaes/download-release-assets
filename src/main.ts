@@ -44,15 +44,15 @@ export async function downloadFile(
   core.debug(`outFilePath ${outFilePath}`);
 
   const buffer = await octokit.repos.getReleaseAsset({
-    url: uploadUrl
-    // headers: {
-    //   Accept: content_type
-    // },
+    url: uploadUrl,
+    headers: {
+      Accept: content_type
+    }
     //asset_id: assetId
     //name: fileName
   });
   core.debug("1");
-  file.write(buffer);
+  file.write(buffer.data);
   core.debug("2");
   file.end();
   core.debug("3");
@@ -130,6 +130,7 @@ async function run(): Promise<void> {
 
     //github.event.release.assets
     for (const asset of github.context.payload.release.assets) {
+      core.debug(`url: ${asset.url}`);
       core.debug(`browser_download_url: ${asset.browser_download_url}`);
       core.debug(`name: ${asset.name}`);
       core.debug(`content_type: ${asset.content_type}`);
