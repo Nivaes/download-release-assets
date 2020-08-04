@@ -12,7 +12,8 @@ export async function downloadFile(
   assetName: string,
   assetContentType: string,
   assetSize: number,
-  outputPath: string
+  outputPath: string,
+  token: string
 ): Promise<void> {
   //const assetName: string = path.basename(assetPath);
 
@@ -41,8 +42,9 @@ export async function downloadFile(
     //headers
     headers: {
       Accept: assetContentType,
-      UserAgent: "download-release-assets"
+      UserAgent: "download-release-assets",
       //Host: "api.github.com"
+      Authorization: `token ${token}`
     }
     //asset_id: assetId
     //name: fileName
@@ -80,7 +82,7 @@ async function run(): Promise<void> {
       core.debug(`name: ${asset.name}`);
       core.debug(`content_type: ${asset.content_type}`);
 
-      downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath));
+      downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath, token));
     }
     await Promise.all(downloads);
   } catch (error) {
