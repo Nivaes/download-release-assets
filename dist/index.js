@@ -540,10 +540,12 @@ async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentT
         headers: {
             Accept: assetContentType,
             UserAgent: "download-release-assets",
-        },
+            //Host: "api.github.com"
+            Authorization: `token ${process.env.GITHUB_TOKEN}`
+        }
         //asset_id: assetId
         //name: fileName
-        access_token: process.env.GITHUB_TOKEN
+        //access_token: process.env.GITHUB_TOKEN
     });
     core.debug("1");
     file.write(buffer.data);
