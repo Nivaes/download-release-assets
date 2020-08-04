@@ -559,6 +559,12 @@ function CreateOctokit() {
     }
     const octokit = github.getOctokit(token);
     octokit.repos.getReleaseAsset.endpoint.merge({
+        headers: {
+            Accept: "application/octet-stream",
+            UserAgent: "download-release-assets",
+            //Host: "api.github.com"
+            Authorization: `token ${process.env.GITHUB_TOKEN}`
+        },
         access_token: token
     });
     return octokit;
