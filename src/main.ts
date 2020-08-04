@@ -1,55 +1,46 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import {Octokit} from "@octokit/core";
-// import * as thc from "typed-rest-client/HttpClient";
 import fs from "fs";
 import * as path from "path";
-// import {IHeaders} from "typed-rest-client/Interfaces";
 import String from "./string";
-//import callbackGlob from "glob";
-//import * as mimeTypes from "mime-types";
 
 export async function downloadFile(
   octokit: Octokit,
   assetId: string,
-  uploadUrl: string,
-  fileName: string,
-  content_type: string,
-  outputPath: string,
-  token: string
+  assetUrl: string,
+  assetName: string,
+  assetContentType: string,
+  assetSize: number,
+  outputPath: string
 ): Promise<void> {
   //const assetName: string = path.basename(assetPath);
 
-  // Determine content-length for header to upload asset
-  //const contentLength = (filePath: fs.PathLike) => fs.statSync(filePath).size;
-
-  // Guess mime type using mime-types package - or fallback to application/octet-stream
-  //const assetContentType = mimeTypes.lookup(assetName) || "application/octet-stream";
-
-  //   // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset for more information
-  //const headers = {"content-type": assetContentType, "content-length": contentLength(assetPath)};
+  // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset for more information
+  const headers = {"content-type": assetContentType, "content-length": assetSize};
 
   // Upload a release asset
   // API Documentation: https://developer.github.com/v3/repos/releases/#upload-a-release-asset
   // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
 
   core.debug(`assetId ${assetId}`);
-  core.debug(`uploadUrl ${uploadUrl}`);
-  core.debug(`fileName ${fileName}`);
-  core.debug(`content_type ${content_type}`);
+  core.debug(`assetUrl ${assetUrl}`);
+  core.debug(`assetName ${assetName}`);
+  core.debug(`assetContentType ${assetContentType}`);
+  core.debug(`assetSize ${assetSize}`);
   core.debug(`outputPath ${outputPath}`);
-  core.debug(`token ${token}`);
 
-  const outFilePath: string = path.resolve(outputPath, fileName);
+  const outFilePath: string = path.resolve(outputPath, assetName);
   const file = fs.createWriteStream(outFilePath);
 
   core.debug(`outFilePath ${outFilePath}`);
 
   const buffer = await octokit.repos.getReleaseAsset({
-    url: uploadUrl,
-    headers: {
-      Accept: content_type
-    }
+    url: assetUrl,
+    headers
+    // headers: {
+    //   Accept: content_type
+    // }
     //asset_id: assetId
     //name: fileName
     //access_token: token
@@ -78,10 +69,7 @@ async function run(): Promise<void> {
     core.debug(`outputPath: ${outputPath}`);
     if (String.isNullOrEmpty(outputPath)) core.info("outputPath: Default ");
 
-    const accessToken = core.getInput("token", {required: false});
-    // core.debug(`token: ${token}`);
-
-    //const downloads: Promise<void>[] = [];
+    const downloads: Promise<void>[] = [];
 
     for (const asset of github.context.payload.release.assets) {
       core.debug(`url: ${asset.url}`);
@@ -89,13 +77,9 @@ async function run(): Promise<void> {
       core.debug(`name: ${asset.name}`);
       core.debug(`content_type: ${asset.content_type}`);
 
-      //downloads.push(downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type));
-      //await downloadFile(octokit, asset.url, asset.name, outputPath, asset.content_type);
-      //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
-      //await downloadFile(octokit, asset.id, github.context.payload.release.upload_url, asset.name, asset.content_type, outputPath);
-      await downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, outputPath, accessToken);
+      downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath));
     }
-    //await Promise.all(downloads);
+    await Promise.all(downloads);
   } catch (error) {
     core.setFailed(error.message);
   }
