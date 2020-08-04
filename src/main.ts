@@ -5,7 +5,7 @@ import fs from "fs";
 import * as path from "path";
 import String from "./string";
 
-export async function downloadFile(
+async function downloadFile(
   octokit: Octokit,
   assetId: string,
   assetUrl: string,
@@ -57,6 +57,20 @@ export async function downloadFile(
   core.debug("3");
 }
 
+function CreateOctokit(): Octokit {
+  const token: string = process.env.GITHUB_TOKEN as string;
+  if (String.isNullOrEmpty(token)) {
+    throw new Error("Not token definition");
+  }
+  const octokit = github.getOctokit(token);
+
+  octokit.repos.getReleaseAsset.endpoint.merge({
+    access_token: token
+  });
+
+  return octokit;
+}
+
 async function run(): Promise<void> {
   try {
     if (github.context.eventName !== "release") {
@@ -64,11 +78,7 @@ async function run(): Promise<void> {
       return;
     }
 
-    const token: string = process.env.GITHUB_TOKEN as string;
-    if (String.isNullOrEmpty(token)) {
-      throw new Error("Not token definition");
-    }
-    const octokit = github.getOctokit(token);
+    const octokit = CreateOctokit();
 
     const outputPath = core.getInput("outputPath", {required: false});
     core.debug(`outputPath: ${outputPath}`);

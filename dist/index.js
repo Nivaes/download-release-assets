@@ -510,7 +510,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.downloadFile = void 0;
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const fs_1 = __importDefault(__webpack_require__(747));
@@ -553,18 +552,24 @@ async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentT
     file.end();
     core.debug("3");
 }
-exports.downloadFile = downloadFile;
+function CreateOctokit() {
+    const token = process.env.GITHUB_TOKEN;
+    if (string_1.default.isNullOrEmpty(token)) {
+        throw new Error("Not token definition");
+    }
+    const octokit = github.getOctokit(token);
+    octokit.repos.getReleaseAsset.endpoint.merge({
+        access_token: token
+    });
+    return octokit;
+}
 async function run() {
     try {
         if (github.context.eventName !== "release") {
             core.info("Not assets download. This actions is only for release event.");
             return;
         }
-        const token = process.env.GITHUB_TOKEN;
-        if (string_1.default.isNullOrEmpty(token)) {
-            throw new Error("Not token definition");
-        }
-        const octokit = github.getOctokit(token);
+        const octokit = CreateOctokit();
         const outputPath = core.getInput("outputPath", { required: false });
         core.debug(`outputPath: ${outputPath}`);
         if (string_1.default.isNullOrEmpty(outputPath))
