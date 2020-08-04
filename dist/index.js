@@ -516,7 +516,7 @@ const github = __importStar(__webpack_require__(469));
 const fs_1 = __importDefault(__webpack_require__(747));
 const path = __importStar(__webpack_require__(622));
 const string_1 = __importDefault(__webpack_require__(591));
-async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentType, assetSize, outputPath, token) {
+async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentType, assetSize, outputPath) {
     //const assetName: string = path.basename(assetPath);
     // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset for more information
     //const headers = {Accept: assetContentType, "content-type": assetContentType, "content-length": assetSize};
@@ -533,18 +533,17 @@ async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentT
     const outFilePath = path.resolve(outputPath, assetName);
     const file = fs_1.default.createWriteStream(outFilePath);
     core.debug(`outFilePath ${outFilePath}`);
+    core.debug("Token1");
     const buffer = await octokit.repos.getReleaseAsset({
         url: assetUrl,
         //headers
         headers: {
             Accept: assetContentType,
             UserAgent: "download-release-assets",
-            //Host: "api.github.com"
-            Authorization: `token ${token}`
-        }
+        },
         //asset_id: assetId
         //name: fileName
-        //access_token: token
+        access_token: process.env.GITHUB_TOKEN
     });
     core.debug("1");
     file.write(buffer.data);
@@ -574,7 +573,7 @@ async function run() {
             core.debug(`browser_download_url: ${asset.browser_download_url}`);
             core.debug(`name: ${asset.name}`);
             core.debug(`content_type: ${asset.content_type}`);
-            downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath, token));
+            downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath));
         }
         await Promise.all(downloads);
     }

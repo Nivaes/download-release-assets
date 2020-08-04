@@ -12,8 +12,7 @@ export async function downloadFile(
   assetName: string,
   assetContentType: string,
   assetSize: number,
-  outputPath: string,
-  token: string
+  outputPath: string
 ): Promise<void> {
   //const assetName: string = path.basename(assetPath);
 
@@ -36,19 +35,20 @@ export async function downloadFile(
   const file = fs.createWriteStream(outFilePath);
 
   core.debug(`outFilePath ${outFilePath}`);
+  core.debug("Token1");
 
   const buffer = await octokit.repos.getReleaseAsset({
     url: assetUrl,
     //headers
     headers: {
       Accept: assetContentType,
-      UserAgent: "download-release-assets",
+      UserAgent: "download-release-assets"
       //Host: "api.github.com"
-      Authorization: `token ${token}`
-    }
+      //Authorization: `token ${process.env.GITHUB_TOKEN}`
+    },
     //asset_id: assetId
     //name: fileName
-    //access_token: token
+    access_token: process.env.GITHUB_TOKEN
   });
   core.debug("1");
   file.write(buffer.data);
@@ -82,7 +82,7 @@ async function run(): Promise<void> {
       core.debug(`name: ${asset.name}`);
       core.debug(`content_type: ${asset.content_type}`);
 
-      downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath, token));
+      downloads.push(downloadFile(octokit, asset.id, asset.url, asset.name, asset.content_type, asset.size, outputPath));
     }
     await Promise.all(downloads);
   } catch (error) {
