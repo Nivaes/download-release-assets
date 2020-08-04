@@ -538,8 +538,8 @@ async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentT
         //headers
         headers: {
             Accept: assetContentType,
-            UserAgent: "download-release-assets",
-            Host: "api.github.com"
+            UserAgent: "download-release-assets"
+            //Host: "api.github.com"
         }
         //asset_id: assetId
         //name: fileName
