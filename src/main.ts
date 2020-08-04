@@ -18,7 +18,7 @@ export async function downloadFile(
 
   // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset for more information
   //const headers = {Accept: assetContentType, "content-type": assetContentType, "content-length": assetSize};
-  const headers = {Accept: assetContentType, "content-length": assetSize};
+  //const headers = {Accept: assetContentType, "content-length": assetSize};
 
   // Upload a release asset
   // API Documentation: https://developer.github.com/v3/repos/releases/#upload-a-release-asset
@@ -38,11 +38,12 @@ export async function downloadFile(
 
   const buffer = await octokit.repos.getReleaseAsset({
     url: assetUrl,
-    headers
-    // headers: {
-    //   Accept: assetContentType,
-    //   content-length, assetContentType
-    // }
+    //headers
+    headers: {
+      Accept: assetContentType,
+      UserAgent: "download-release-assets",
+      Host: "api.github.com"
+    }
     //asset_id: assetId
     //name: fileName
     //access_token: token
