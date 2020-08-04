@@ -7,5 +7,17 @@
         "payload",
         "refs",
         "repos"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#0071e6",
+        "activityBar.activeBorder": "#ff80be",
+        "activityBar.background": "#0071e6",
+        "statusBar.background": "#0058b3",
+        "statusBar.border": "#0058b3",
+        "statusBarItem.hoverBackground": "#0071e6",
+        "titleBar.activeBackground": "#0058b3",
+        "titleBar.border": "#0058b3",
+        "titleBar.inactiveBackground": "#0058b399"
+    },
+    "peacock.color": "#0058b3"
 }

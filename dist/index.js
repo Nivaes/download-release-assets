@@ -519,7 +519,8 @@ const string_1 = __importDefault(__webpack_require__(591));
 async function downloadFile(octokit, assetId, assetUrl, assetName, assetContentType, assetSize, outputPath) {
     //const assetName: string = path.basename(assetPath);
     // Setup headers for API call, see Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset for more information
-    const headers = { Accept: assetContentType, "content-type": assetContentType, "content-length": assetSize };
+    //const headers = {Accept: assetContentType, "content-type": assetContentType, "content-length": assetSize};
+    const headers = { Accept: assetContentType, "content-length": assetSize };
     // Upload a release asset
     // API Documentation: https://developer.github.com/v3/repos/releases/#upload-a-release-asset
     // Octokit Documentation: https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
